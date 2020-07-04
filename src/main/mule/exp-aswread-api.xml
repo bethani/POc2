@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="b2c42cfe-da09-438b-87a5-75aeb7128757" file="config.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8da6a6d3-ccef-4c74-a858-7e7bf875ffcf" >
+		<http:listener-connection host="${http.host}" port="${http.port}" />
+	</http:listener-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="9971839c-7208-4c83-b7b1-bf79796466fe" >
+		<s3:role-connection region="US_GOV_WEST_1" roleARN="${s3.role.arn}" accessKey="${s3.access.key}" secretKey="${s3.secret.key}"/>
+	</s3:config>
+	<flow name="exp-aswread-apiFlow" doc:id="af949689-a763-4840-8757-68866eadd9dd" >
+		<http:listener doc:name="Listener" doc:id="c07d1b5a-dddd-403d-8f07-c00f96ff7e28" path="/readaws" config-ref="HTTP_Listener_config"/>
+		<s3:get-object doc:name="read data from AWS" doc:id="0addce5c-ff70-406b-b228-9916c3529555" config-ref="Amazon_S3_Configuration" bucketName="${s3.bucket.nam}"/>
+		<ee:transform doc:name="data transmition" doc:id="a918fcd5-7750-4638-aea4-dcac01e653de" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5aac0d4f-a1dc-43ce-8e81-e913db50549b" message="#[payload]"/>
+	</flow>
+</mule>

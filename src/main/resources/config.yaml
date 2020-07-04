@@ -1,0 +1,12 @@
+s3.role.arn: "arn:aws-us-gov:iam::127869609744:role/AmazonS3FullAccessRole"
+s3.access.key: "AKIAR3RM7M4IDJMNUP46"
+s3.secret.key: "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"
+s3.bucket.name: "sdu-collection-storage"
+
+
+http:
+  host: "0.0.0.0"
+  port: "8083"
+  readpath: "/readaws"
+  writepath: "/writeaws"
+  
